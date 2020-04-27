@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd ">
+
+    <changeSet author="Ser" id="initial_schema">
+        <sql splitStatements="true">
+            create table locations (id integer primary key);
+            create table sensors (
+                id integer primary key,
+                objectId integer references locations(id),
+                latestTime bigint,
+                latestValue double precision
+            );
+            create table measurements (
+                sensorId integer references sensors(id),
+                time bigint not null,
+                value double precision not null,
+                constraint pk_measurements primary key (sensorId, time)
+            );
+            create index on measurements (time);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
+
+

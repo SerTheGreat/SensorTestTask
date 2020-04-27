@@ -1,0 +1,16 @@
+!.gitignore
+
+*/.settings
+*/.settings/**
+*/.classpath
+*/.project
+.idea/
+*.iml
+*.orig
+*.project
+.settings
+/bin/
+*/logs/
+/logs/
+/build/
+/application.properties

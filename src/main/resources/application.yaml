@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost/sensor_task
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    drop-first: true
+    change-log: classpath:db/changelog/changelog-master.xml
+
+#Max number of measurement data to keep in a batch. That is needed to avoid memory overflow problems when
+#receiving and sending large amount of data
+maxMeasurementsBatchSize : 9192
+
+
