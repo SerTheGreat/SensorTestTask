@@ -115,7 +115,7 @@ public class MeasurementService {
             JsonFactory factory = new JsonFactory();
             JsonGenerator jsonGenerator = factory.createGenerator(outputStream);
             jsonGenerator.setCodec(new ObjectMapper());
-            int offset = 0; //we will request measurements in pages adding a page size to offset every time
+            int offset = 0; //we will query measurements in pages adding a page size to offset every time
             List<Measurement> result;
             jsonGenerator.writeStartArray();
             do {
