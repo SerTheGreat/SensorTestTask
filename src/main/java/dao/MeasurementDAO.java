@@ -16,11 +16,13 @@ public interface MeasurementDAO {
     void save(Collection<Measurement> measurements);
 
     /**
-     * Finds all measurements for specified time period by sensor id
+     * Finds all measurements for specified time period by sensor id with pagination
      * @param sensorId id of the sensor
      * @param from start of the period in seconds
      * @param to end of the period in seconds
-     * @return list of found measurements, or an empty list if nothing was found
+     * @param limit maximum amount of records to return
+     * @param offset number of rows to skip
+     * @return a list of Measurement objects representing a requested page
      */
     List<Measurement> findBySensorIdAndPeriod(
             int sensorId,

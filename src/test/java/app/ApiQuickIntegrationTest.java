@@ -56,10 +56,11 @@ public class ApiQuickIntegrationTest implements ApiIntegrationTest {
     @Test
     @Override
     public void testApiHistory() throws Exception {
-        final String expectedResult = "{\"sensorId\":1,\"time\":1001,\"value\":1.3}";
+        final String expectedResult =
+                "[{\"sensorId\":1,\"time\":1000,\"value\":1.2},{\"sensorId\":1,\"time\":1001,\"value\":1.3}]";
         mockMvc.perform(get(ApiIntegrationTest.HISTORY_URL)
                 .param("id", "1")
-                .param("from","1001")
+                .param("from","1000")
                 .param("to", "1002"))
                 .andExpect(status().isOk())
                 .andDo(result -> System.out.println(ApiIntegrationTest.HISTORY_URL +

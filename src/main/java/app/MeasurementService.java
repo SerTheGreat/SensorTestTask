@@ -1,6 +1,7 @@
 package app;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * The main service to deal with measurement data
@@ -98,13 +98,6 @@ public class MeasurementService {
     }
 
     /**
-     * Finds all measurements for specified time period by sensor id
-     * @param sensorId id of the sensor
-     * @param from start of the period in seconds
-     * @param to end of the period in seconds
-     * @return list of found measurements or an empty list if nothing was found
-     */
-    /**
      * Finds all measurements for specified time period by sensor id and writes them into output stream as json.
      * @param sensorId id of the sensor
      * @param from start of the period
@@ -117,26 +110,29 @@ public class MeasurementService {
             long to,
             OutputStream outputStream
     ) {
+        //Measurements will be queried and streamed in pages to avoid OutOfMemory if too much history is requested
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            int offset = 0;
+            JsonFactory factory = new JsonFactory();
+            JsonGenerator jsonGenerator = factory.createGenerator(outputStream);
+            jsonGenerator.setCodec(new ObjectMapper());
+            int offset = 0; //we will request measurements in pages adding a page size to offset every time
             List<Measurement> result;
+            jsonGenerator.writeStartArray();
             do {
                 result = measurementDAO.findBySensorIdAndPeriod(sensorId, from, to, maxBatchSize, offset);
                 result.forEach(m -> {
                     try {
-                        mapper.writeValue(outputStream, m);
+                        jsonGenerator.writeObject(m);
+                        //objectMapper.writeValue(outputStream, m);
                     } catch (Exception e) {
                         log.error("Error writing output stream", e);
                         throw new RuntimeException(e);
                     }
                 });
-                if (result.size() == 0) {
-                    outputStream.close();
-                } else {
-                    offset += result.size();
-                }
+                offset += result.size();
             } while (result.size() > 0);
+            jsonGenerator.writeEndArray();
+            jsonGenerator.flush();
         } catch (Exception e) {
             log.error("Error on serializing json");
             throw new RuntimeException(e);
@@ -171,7 +167,7 @@ public class MeasurementService {
 
     /**
      * Checks the specified measurement data for validity
-     * @param measurement
+     * @param measurement the Measurement object to validate
      * @return true if the measurement data is valid, false otherwise
      */
     private boolean validate(Measurement measurement) {

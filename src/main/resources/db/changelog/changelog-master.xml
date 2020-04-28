@@ -24,6 +24,7 @@
                 constraint pk_measurements primary key (sensorId, time)
             );
             create index on measurements (time);
+            create index on sensors (objectId);
         </sql>
     </changeSet>
 

@@ -50,57 +50,59 @@ public class ApiStressIntegrationTest implements ApiIntegrationTest {
     @Test
     @Order(0) //Other tests rely on the data saved by this one so it should always run first
     public void testMeasurementsSave() throws Exception {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(DATAFILE))) {
             measurementService.parseAndSave(inputStream);
         }
-        time -=System.currentTimeMillis();
-        Assert.assertTrue("Too long execution", time / 60000 < 5);
+        assertTimeInSec(startTime, 5 * 60);
     }
 
     @Test
     @Override
     public void testApiHistory() throws Exception {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         mockMvc.perform(get(ApiIntegrationTest.HISTORY_URL)
                 .param("id", "1")
                 .param("from","0")
                 .param("to", "" + System.currentTimeMillis()))
                 .andExpect(status().isOk());
-        time -=System.currentTimeMillis();
-        Assert.assertTrue("Too long execution", time / 1000 < 1);
+        assertTimeInSec(startTime, 1);
     }
 
     @Test
     @Override
     public void testApiLatest() throws Exception {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         mockMvc.perform(get(ApiIntegrationTest.LATEST_URL).param("id", "2"))
                 .andExpect(status().isOk())
                 .andDo(result -> System.out.println(ApiIntegrationTest.LATEST_URL +
                         ": " +result.getResponse().getContentAsString()))
                 .andExpect(result ->
                         Assert.assertTrue(result.getResponse().getContentAsString().length() > 0));
-        time -=System.currentTimeMillis();
-        Assert.assertTrue("Too long execution", time / 1000 < 1);
+        assertTimeInSec(startTime, 1);
     }
 
     @Test
     @Override
     public void testApiAverages() throws Exception {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         mockMvc.perform(get(ApiIntegrationTest.AVERAGES_URL))
                 .andExpect(status().isOk())
                 .andDo(result -> System.out.println(ApiIntegrationTest.AVERAGES_URL +
                         ": " +result.getResponse().getContentAsString()))
                 .andExpect(result ->
                         Assert.assertTrue(result.getResponse().getContentAsString().length() > 0));
-        time -=System.currentTimeMillis();
-        Assert.assertTrue("Too long execution", time / 1000 < 1);
+        assertTimeInSec(startTime, 1);
+    }
+
+    //Asserts that execution time from startMillis to current time is less than limitInSec
+    private void assertTimeInSec(long startMillis, int limitInSec) {
+        Assert.assertTrue("Too long execution",
+                (System.currentTimeMillis() - startMillis) < limitInSec * 1000);
     }
 
     @Override
-    public void testApiSave() throws Exception {
+    public void testApiSave() {
 
     }
 
