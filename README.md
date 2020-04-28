@@ -20,7 +20,16 @@ spring:
 and run `gradlew :test --tests app.ApiQuickIntegrationTest` from project's root. The database schema will be recreated automatically.
 
 The above will run quick tests on a few lines of test data. You may also run tests with heavy load. 
-Use generator to generate a file with test json content (generator isn't included).
+Use generator to generate a file with test json content in the following format (generator isn't included):
+```
+[
+{"objectId": 0, "sensorId": 0, "time": 1587634767, "value": 102.0},
+{"objectId": 0, "sensorId": 1, "time": 1587634768, "value": 29.0},
+{"objectId": 1, "sensorId": 2, "time": 1587634767, "value": -27.0},
+{"objectId": 2, "sensorId": 3, "time": 1587634767, "value": -3.0}
+...
+]
+```
 Name it <i>data.json</i> and put into the project's root. After that run `gradlew :test --tests app.ApiStressIntegrationTest`
 
 ## Deploy and run
