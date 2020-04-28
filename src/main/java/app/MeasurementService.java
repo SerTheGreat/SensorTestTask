@@ -123,7 +123,6 @@ public class MeasurementService {
                 result.forEach(m -> {
                     try {
                         jsonGenerator.writeObject(m);
-                        //objectMapper.writeValue(outputStream, m);
                     } catch (Exception e) {
                         log.error("Error writing output stream", e);
                         throw new RuntimeException(e);

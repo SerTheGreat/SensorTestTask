@@ -59,7 +59,7 @@ public class MeasurementBatchService {
     /**
      * Saves the contents if a batch to database and clears it.
      * This method also saves new locations and sensors referenced by the measurements data.
-     * @param batch
+     * @param batch a MeasurementBatch instance to flush
      */
     @Transactional
     public void flush(MeasurementBatch batch) {
@@ -69,11 +69,10 @@ public class MeasurementBatchService {
         batch.clear();
     }
 
-
     /**
      * Represents a batch of measurement objects intended to be saved to the database all at once.
-     * In fact it is a list wrapper implemented as an inner class for only the MeasurementBatchService methods
-     * could manipulate the underlying list
+     * In fact it is a list wrapper implemented as an inner class with private methods for only the
+     * MeasurementBatchService methods could manipulate the underlying list.
      */
     public static class MeasurementBatch {
 
@@ -92,13 +91,11 @@ public class MeasurementBatchService {
         }
 
         /**
-         * We'd want to return an immutable list here but it would require a duplicate. To avoid that the class
-         * has only private accessors and thus its state can be modified only within the containing service,
-         * making the batch "externally immutable"
-         * @return a list of measurements in the batch
+         * Gets a list of measurements in the batch
+         * @return an immutable list of measurements
          */
-        private java.util.List<Measurement> getMeasurements() {
-            return measurements;
+        public java.util.List<Measurement> getMeasurements() {
+            return Collections.unmodifiableList(measurements);
         }
 
         /**
@@ -135,7 +132,7 @@ public class MeasurementBatchService {
                         .collect(
                                 HashSet::new,
                                 (s, m) -> s.add(new Location(m.getObjectId())),
-                                (s1, s2) -> s1.addAll(s2)
+                                Set::addAll
                         );
         }
     }

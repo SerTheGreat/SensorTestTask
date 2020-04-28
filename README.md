@@ -51,7 +51,7 @@ spring:
 and specify your database name, username and password.
 After that run `java -jar sensor-task-1.0.jar`
 
-The server will listen on standard 80 HTTP port by default.
+The server will listen on the standard HTTP port 80 by default.
 
 ## Database initialization script
-The script is specified in the /src/main/resources/db/changelog/changelog-master.xml
+The script is specified in the <i>/src/main/resources/db/changelog/changelog-master.xml</i>
