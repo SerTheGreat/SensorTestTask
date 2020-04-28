@@ -1,4 +1,11 @@
 # SensorTestTask
+The project is a solution of the test task to write a REST service
+
+## The service API
+* <i>/api/save</i> - save sensor measurements data passed as a json array
+* <i>/api/history?id=1&from=1565654400&to=1565827200</i> - get measurements history for the specified sensor and time period
+* <i>/api/latest?id=1</i> - get the current values of all sensors for the specified object
+* <i>/api/avg</i> - get the average of the current values of all sensors for every object
 
 ## Requirements
 To run the project Java 8 is required. Also you need to have PostgreSQL server installed.
