@@ -12,5 +12,8 @@
 /bin/
 */logs/
 /logs/
+/.gradle/
 /build/
 /application.properties
+
+
