@@ -62,7 +62,8 @@ public class ApiQuickIntegrationTest implements ApiIntegrationTest, TestExecutio
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("[{\"objectId\": 2, \"sensorId\": 3, \"time\": 1001, \"value\": 2.0}"
                         + ",{\"objectId\": 2, \"sensorId\": 4, \"time\": 1005, \"value\": 1.1}]"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("2"));
         Map<Integer, Double> latestAfter = sensorDAO.getLatestValuesByObjectId(2);
         //The latest value of the sensor 3 shouldn't  change:
         Assert.assertEquals(latestBefore.get(3), latestAfter.get(3), 0.0001);

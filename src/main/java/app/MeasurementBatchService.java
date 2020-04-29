@@ -46,26 +46,31 @@ public class MeasurementBatchService {
      * Puts a Measurement into the batch which is then flushed to database if its capacity is reached
      * @param measurement The measurement data to be saved
      * @param batch A @MeasurementBatch instance to hold the measurement
+     * @return the number of actually saved measurements (non-zero only when batch flushes)
      */
     @Transactional
-    public void saveThroughBatch(Measurement measurement, MeasurementBatch batch) {
+    public int saveThroughBatch(Measurement measurement, MeasurementBatch batch) {
+        int saved = 0;
         batch.add(measurement);
         if (batch.measurements.size() >= maxBatchSize) { //actually the size should never get over the MAX
-            flush(batch);
+            saved = flush(batch);
         }
+        return saved;
     }
 
     /**
      * Saves the contents if a batch to database and clears it.
      * This method also saves new locations and sensors referenced by the measurements data.
      * @param batch a MeasurementBatch instance to flush
+     * @return the number of actually saved measurements
      */
     @Transactional
-    public void flush(MeasurementBatch batch) {
+    public int flush(MeasurementBatch batch) {
         locationDAO.save(batch.locationSet());
         sensorDAO.save(batch.sensorSet());
-        measurementDAO.save(batch.getMeasurements());
+        int saved = measurementDAO.save(batch.getMeasurements());
         batch.clear();
+        return saved;
     }
 
     /**

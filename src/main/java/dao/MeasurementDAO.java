@@ -12,8 +12,9 @@ public interface MeasurementDAO {
     /**
      * Saves measurements data to the database
      * @param measurements a list of measurements to save
+     * @return number of actually saved measurements
      */
-    void save(Collection<Measurement> measurements);
+    int save(Collection<Measurement> measurements);
 
     /**
      * Finds all measurements for specified time period by sensor id with pagination

@@ -23,9 +23,14 @@ public class ApiController {
     @Autowired
     MeasurementService measurementService;
 
+    /**
+     * Saves an array of measurements data posted as json content
+     * @return the number of successfully passed and saved measurements as a plain number in response body
+     * @throws IOException
+     */
     @RequestMapping(path = "/save", method = RequestMethod.POST)
-    public void save(HttpServletRequest request) throws IOException {
-        measurementService.parseAndSave(request.getInputStream());
+    public Long save(HttpServletRequest request) throws IOException {
+        return measurementService.parseAndSave(request.getInputStream());
     }
 
     @RequestMapping(path = "/history", method = RequestMethod.GET)

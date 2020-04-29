@@ -4,10 +4,7 @@ import model.Measurement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MeasurementDAOImpl implements MeasurementDAO {
@@ -18,8 +15,8 @@ public class MeasurementDAOImpl implements MeasurementDAO {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public void save(Collection<Measurement> measurements) {
-        jdbcTemplate.batchUpdate(
+    public int save(Collection<Measurement> measurements) {
+        int[] updated = jdbcTemplate.batchUpdate(
                 "INSERT INTO " + TABLE + " (sensorId, time, value) VALUES (?, ?, ?)"
                 + " ON CONFLICT ON CONSTRAINT pk_measurements DO NOTHING",
                 measurements
@@ -30,6 +27,7 @@ public class MeasurementDAOImpl implements MeasurementDAO {
                                 m.getValue()})
                         .collect(Collectors.toList())
         );
+        return (int)Arrays.stream(updated).filter(u -> u > 0).count();
     }
 
     @Override

@@ -9,6 +9,11 @@ spring:
     change-log: classpath:db/changelog/changelog-master.xml
     contexts: test
 
+logging:
+  file:
+    name:
+      test_logs/sensors_test_task.log
+
 #Max number of measurement data to keep in a batch. That is needed to avoid memory overflow problems when
 #receiving and sending large amount of data
 maxMeasurementsBatchSize : 9192

@@ -8,6 +8,11 @@ spring:
     drop-first: true
     change-log: classpath:db/changelog/changelog-master.xml
 
+logging:
+  file:
+    name:
+      logs/sensors_test_task.log
+
 #Max number of measurement data to keep in a batch. That is needed to avoid memory overflow problems when
 #receiving and sending large amount of data
 maxMeasurementsBatchSize : 9192

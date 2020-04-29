@@ -46,9 +46,12 @@ public class MeasurementService {
      * Parses and saves measurement data to the database from an input stream.
      * The method expects json array of objects in the stream.
      * @param inputStream the input stream of json measurement data
+     * @return the number of successfully saved measurements
      */
-    void parseAndSave(InputStream inputStream) {
+    public long parseAndSave(InputStream inputStream) {
+        log.info("Parsing the stream of measurements");
         MeasurementBatchService.MeasurementBatch batch = batchService.createBatch();
+        long successfullySaved = 0;
         try {
             JsonFactory jfactory = new JsonFactory();
             JsonParser parser = jfactory.createParser(inputStream);
@@ -65,14 +68,16 @@ public class MeasurementService {
                     continue;
                 }
                 //If the parsed data is Ok, add the measurement to the batch:
-                batchService.saveThroughBatch(measurement, batch);
+                successfullySaved += batchService.saveThroughBatch(measurement, batch);
             }
         } catch (Exception e) {
             log.error("Error on parsing json", e);
             throw new RuntimeException(e);
         } finally {
-            batchService.flush(batch);
+            successfullySaved += batchService.flush(batch);
+            log.info("Number of successfully saved measurements: " + successfullySaved);
         }
+        return successfullySaved;
     }
 
     /**
