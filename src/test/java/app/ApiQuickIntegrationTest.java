@@ -1,17 +1,22 @@
 package app;
 
+import dao.SensorDAO;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.TestExecutionListener;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,11 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ApiQuickIntegrationTest implements ApiIntegrationTest {
+@TestExecutionListeners(value = {
+        QuickIntegrationTestDBInitializingListener.class,
+        DependencyInjectionTestExecutionListener.class
+})
+public class ApiQuickIntegrationTest implements ApiIntegrationTest, TestExecutionListener {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private SensorDAO sensorDAO;
 
     private MockMvc mockMvc;
 
@@ -42,15 +53,21 @@ public class ApiQuickIntegrationTest implements ApiIntegrationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
-
     @Test
-    @Order(0) //Other tests rely on the data saved by this one so it should always run first
     @Override
     public void testApiSave() throws Exception {
+        //Here we'll test not only the fact that save API works but also that it changes the latest values properly
+        Map<Integer, Double> latestBefore = sensorDAO.getLatestValuesByObjectId(2);
         mockMvc.perform(post(ApiIntegrationTest.SAVE_URL)
-                .contentType("application/json")
-                .content(TEST_JSON_CONTENT))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[{\"objectId\": 2, \"sensorId\": 3, \"time\": 1001, \"value\": 2.0}"
+                        + ",{\"objectId\": 2, \"sensorId\": 4, \"time\": 1005, \"value\": 1.1}]"))
                 .andExpect(status().isOk());
+        Map<Integer, Double> latestAfter = sensorDAO.getLatestValuesByObjectId(2);
+        //The latest value of the sensor 3 shouldn't  change:
+        Assert.assertEquals(latestBefore.get(3), latestAfter.get(3), 0.0001);
+        //The latest value of the sensor 4 should have been updated:
+        Assert.assertEquals(1.1, latestAfter.get(4), 0.0001);
     }
 
     @Test

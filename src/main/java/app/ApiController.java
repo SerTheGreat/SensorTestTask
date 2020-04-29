@@ -28,7 +28,6 @@ public class ApiController {
         measurementService.parseAndSave(request.getInputStream());
     }
 
-    @JsonView(Views.History.class)
     @RequestMapping(path = "/history", method = RequestMethod.GET)
     public void history(@RequestParam("id") int sensorId,
                         @RequestParam("from") long from,
