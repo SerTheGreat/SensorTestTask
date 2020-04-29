@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * Represents a location (building etc.) where sensors are placed.
- * Isn't named as "Object" to not confuse with the java Object class.
+ * Isn't named as "Object" to not confuse with the Java Object class.
  */
 public class Location {
 

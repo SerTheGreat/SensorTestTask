@@ -15,10 +15,9 @@ import java.util.*;
 
 /**
  * The measurement data are parsed and saved in batches to improve DB performance,
- * so this the main service to deal with those batches
+ * so this is the main service to deal with those batches
  */
 
-//objects to accumulate in batch and then they are flushed at once
 @Service
 public class MeasurementBatchService {
 

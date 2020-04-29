@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import dao.MeasurementDAO;
@@ -51,37 +52,14 @@ public class MeasurementService {
         try {
             JsonFactory jfactory = new JsonFactory();
             JsonParser parser = jfactory.createParser(inputStream);
+            JsonMapper jsonMapper = new JsonMapper();
             while (parser.nextToken() != JsonToken.END_ARRAY) {
-                //Parsing our measurement data:
-                Measurement measurement = new Measurement();
-                while (parser.nextToken() != JsonToken.END_OBJECT) {
-                    if (!JsonToken.FIELD_NAME.equals(parser.currentToken())) { //looking for the next field name
-                        continue;
-                    }
-                    String fieldName = parser.getCurrentName();
-                    if (fieldName == null) {
-                        continue;
-                    }
-                    switch (fieldName) {
-                        case "objectId":
-                            parser.nextToken();
-                            measurement.setObjectId(parser.getIntValue());
-                            break;
-                        case "sensorId":
-                            parser.nextToken();
-                            measurement.setSensorId(parser.getIntValue());
-                            break;
-                        case "time":
-                            parser.nextToken();
-                            measurement.setTime(parser.getLongValue());
-                            break;
-                        case "value":
-                            parser.nextToken();
-                            measurement.setValue(parser.getDoubleValue());
-                            break;
-                    }
+                if (parser.currentToken() != JsonToken.START_OBJECT) { //seeking the start of the next object
+                    continue;
                 }
-                //Reached the end of an object. If its data isn't full, jump to the next one
+                //Parsing our measurement data:
+                Measurement measurement = jsonMapper.readValue(parser, Measurement.class);
+                //If its data isn't full, jump to the next object
                 if (!validate(measurement)) {
                     log.info("Invalid measurement data:" + (new JsonMapper()).writeValueAsString(measurement));
                     continue;
@@ -112,9 +90,9 @@ public class MeasurementService {
     ) {
         //Measurements will be queried and streamed in pages to avoid OutOfMemory if too much history is requested
         try {
+            ObjectMapper objectMapper = new ObjectMapper().disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
             JsonFactory factory = new JsonFactory();
-            JsonGenerator jsonGenerator = factory.createGenerator(outputStream);
-            jsonGenerator.setCodec(new ObjectMapper());
+            JsonGenerator jsonGenerator = factory.createGenerator(outputStream).setCodec(objectMapper);
             int offset = 0; //we will query measurements in pages adding a page size to offset every time
             List<Measurement> result;
             jsonGenerator.writeStartArray();
@@ -122,7 +100,9 @@ public class MeasurementService {
                 result = measurementDAO.findBySensorIdAndPeriod(sensorId, from, to, maxBatchSize, offset);
                 result.forEach(m -> {
                     try {
-                        jsonGenerator.writeObject(m);
+                        objectMapper
+                                .writerWithView(Views.History.class)
+                                .writeValue(jsonGenerator, m);
                     } catch (Exception e) {
                         log.error("Error writing output stream", e);
                         throw new RuntimeException(e);

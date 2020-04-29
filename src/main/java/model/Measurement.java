@@ -1,23 +1,27 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import app.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Represents single measurement data of a certain sensor
  */
 public class Measurement {
 
-    @JsonIgnore
+
     //This field is redundant for measurement data as sensorId is enough. It is needed only when reading API input.
     private Integer objectId;
 
+    @JsonView(Views.History.class)
     private Integer sensorId;
 
     public Measurement() {
     }
 
+    @JsonView(Views.History.class)
     private Long time;
 
+    @JsonView(Views.History.class)
     private Double value;
 
     public Integer getObjectId() {
