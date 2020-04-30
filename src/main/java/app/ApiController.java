@@ -25,7 +25,7 @@ public class ApiController {
 
     /**
      * Saves an array of measurements data posted as json content
-     * @return the number of successfully passed and saved measurements as a plain number in response body
+     * @return the number of successfully parsed and saved measurements as a plain number in response body
      * @throws IOException
      */
     @RequestMapping(path = "/save", method = RequestMethod.POST)

@@ -7,7 +7,7 @@ spring:
   liquibase:
     drop-first: true
     change-log: classpath:db/changelog/changelog-master.xml
-    contexts: test
+    contexts: prod, test
 
 logging:
   file:
