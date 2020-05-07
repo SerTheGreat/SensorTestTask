@@ -3,12 +3,14 @@ package dao;
 import model.Sensor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Repository
 public class SensorDAOImpl implements SensorDAO {
 
     public static final String TABLE = "sensors";

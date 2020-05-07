@@ -3,10 +3,12 @@ package dao;
 import model.Measurement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Repository
 public class MeasurementDAOImpl implements MeasurementDAO {
 
     public static final String TABLE = "measurements";

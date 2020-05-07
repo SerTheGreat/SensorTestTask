@@ -3,10 +3,12 @@ package dao;
 import model.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Repository
 public class LocationDAOImpl implements LocationDAO {
 
     public static final String TABLE = "locations";
