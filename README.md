@@ -1,5 +1,5 @@
 # SensorTestTask
-The project is a solution of the test task to write a REST service
+The project is a solution of the test task to write a highly loaded REST service
 
 ## The service API
 * <i>/api/save</i> - save sensor measurements data passed as a json array
