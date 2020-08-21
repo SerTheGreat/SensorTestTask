@@ -64,7 +64,7 @@ public class MeasurementService {
                 Measurement measurement = jsonMapper.readValue(parser, Measurement.class);
                 //If its data isn't full, jump to the next object
                 if (!validate(measurement)) {
-                    log.info("Invalid measurement data:" + (new JsonMapper()).writeValueAsString(measurement));
+                    log.warn("Invalid measurement data:" + (new JsonMapper()).writeValueAsString(measurement));
                     continue;
                 }
                 //If the parsed data is Ok, add the measurement to the batch:
